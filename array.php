@@ -1,0 +1,10 @@
+<?php
+/**
+ * Create by PhpStorm
+ * User Leaveone
+ * Data 2023/1/11
+ * Time 12:14
+ */
+/**
+ *  php  就是array and hash 哈希算法；
+ */
