@@ -42,6 +42,17 @@ $c->next = $d;
 $d->next = $e;
 $e->next = $c;
 $circleHead =  $a;
+
+// 特例
+$onlyoneNodeHead = new ListNode(1);
+// last最后一个节点循环自己；
+$f = new ListNode(1);
+$g = new ListNode(2);
+$h = new ListNode(3);
+$f->next = $g;
+$g->next = $h;
+$h->next = $h;
+$lastelecircleHead = $f;
 /**
  * 牛客-- 剑指offer；
  * JZ6 从尾到头打印链表；
@@ -187,28 +198,143 @@ function FindFirstCommonNode($pHead1, $pHead2) {
 /**
  *  判断一个 list 有没有环
  *  快慢指针；
+ * 特例： 只有一个元素 怎么去判断是否带环；
  */
 
 function isCircleList($head) {
     $fast = $head;
     $slow = $head;
-
-    while ($fast != null)  {
+    $fast = $fast->next->next;
+    while ($fast != null && $fast->next != null)  {
         $fast = $fast->next->next;
         $slow = $slow->next;
+        // 只有一个元素 $slow = null $fast = null
         if ($fast === $slow) {
             return true;
         }
     }
     return false;
 }
-var_dump(isCircleList($circleHead));die;
+//var_dump(isCircleList($circleHead));die;
+//var_dump(isCircleList($onlyoneNodeHead));die;//
 
 /**
  *  判断一个循环列表的入环节点；
+ * first repeat node
+ */
+//1. space:O(n) time:O(n) php 数组的key 不能保存 复式数据类型，所以这里存的是值，必须要不相等才行；
+function EntryNodeOfLoopset($pHead)
+{
+    $set = [];
+    while ($pHead != null) {
+        if ($set[$pHead->val] == 1) {
+            // success
+            return $pHead;
+        } else {
+            $set[$pHead->val] = 1;
+            $pHead  = $pHead->next;
+        }
+    }
+    // write code here
+}
+
+//var_dump(EntryNodeOfLoopset($circleHead));die;
+/**
+ * @param $pHead
+ * 注意特例，当 x 不存在的时候
+ *
+ * ---x---entry-------y(meet)--------
+ *          | ____________Z_________|
+ *  slow = x + n(y+z) + y;
+ *  fast = x + m(y+z) + y;
+ * 2slow = fast;
+ * (x+y) = (m-2n)(y+z)
+ * x = (m-2n)(y+z) -y;
+ *
  */
 
 function EntryNodeOfLoop($pHead)
 {
+    $fast = $pHead;
+    $slow = $pHead;
     // write code here
+    while ($fast != null && $fast->next != null) {
+        $fast = $fast->next->next;
+        $slow = $slow->next;
+        if ($fast === $slow) {
+            break;
+        }
+    }
+    //判断是否有环？
+    if ($fast == null || $fast->next == null) return;
+   //reset
+    $fast = $pHead;
+    while ($fast !== $slow) {
+        $fast = $fast->next;
+        $slow = $slow->next;
+    }
+    return $slow;
 }
+
+//var_dump(EntryNodeOfLoop($circleHead));die;
+//var_dump(EntryNodeOfLoop($lastelecircleHead));die;
+
+
+/**
+ * list 最后k个节点
+ *  栈 也是可以的； 最后k个；  space : O(n)   time : O(n);
+ *  双指针   p1 先走k位置； p2再开始走； p1 到结束，p2的位置就是k的结点位置；
+ */
+
+/**
+ * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+ *
+ *
+ * @param pHead ListNode类
+ * @param k int整型
+ * @return ListNode类
+ */
+function FindKthToTail( $pHead ,  $k )
+{
+    $dummy = new ListNode(-1);
+    $dummy->next = $pHead;
+
+    // write code here
+    $p1 = $dummy;
+    $p2 = $dummy;
+
+    for ($i = 1; $i <= $k; $i++) {
+        $p1 = $p1->next;
+        //  这里不应该判断虚拟结点；
+        if ($p1 == null) {
+            return null;
+        }
+    }
+
+    while ($p1 != null) {
+        $p1 = $p1->next;
+        $p2 = $p2->next;
+    }
+    return $p2;
+}
+// 12345
+
+//var_dump(FindKthToTail($head,5));die;
+
+
+//
+
+/**
+ * list的中间点
+ *  快慢指针
+ * 奇数是不是会有两个呀
+ *
+ * 偶数 会不会有两个？？？？？
+ */
+function middleList($head) {
+
+}
+
+/**
+ * 删除链表的第N个结点
+ */
