@@ -506,6 +506,25 @@ class RandomListNode{
     }
 }
 
+$aa = new RandomListNode(1);
+$bb = new RandomListNode(2);
+$cc = new RandomListNode(3);
+$dd = new RandomListNode(4);
+$ee = new RandomListNode(5);
+
+$aa->next = $bb;
+$bb->next = $cc;
+$cc->next = $dd;
+$dd->next = $ee;
+
+
+$aa->random = $cc;
+$bb->random = $ee;
+$cc->random = NULL;
+$dd->random = $bb;
+$ee->random = NULL;
+
+$randomHead = $aa;
 /**
  * @param $head
  * 1.此解法参考了大佬的做法, 主要思路是将原链表的结点对应的拷贝节点连在其后, 最后链表变成 原1 -> 拷1 -> 原2 -> 拷2 -> ... -> null 的形式
@@ -526,11 +545,13 @@ function MyClone($head)
        $mid = $head->next;
        $head->next = new RandomListNode($head->label);
        $head->next->next = $mid;
-       $head = $mid->next;
+       $head = $mid;
    }
+//   print_r($stage);die;
    // 双指针
    $old = $stage;
    $clone = $stage->next;
+   $ret = $stage->next;
    while ($clone != null) {
        //find clone random node
        $clone->random = $old->random == NULL ? NULL : $old->random->next;
@@ -550,10 +571,16 @@ function MyClone($head)
    }
    //delete 删除原结点
 
-   return $clone;
+   return $ret;
 }
 
-var_dump(MyClone($head));die;
+//print_r(MyClone($randomHead));die;  // k可以打印对象 格式可读性比较好看；
+$ret = MyClone($randomHead);
+//print_r($ret->random);//$cc
+//print_r($ret->next->random);//$ee
+//print_r($ret->next->next->random);//null
+//print_r($ret->next->next->next->random);//$bb
+//print_r($ret->next->next->next->next->next->random);//null
 // 会自动补NULl 不需要去判断空指针； c语言需要去判断空指针；
 //var_dump($head->next->next->next->next->next->next->next->next);die;// NULL
 
