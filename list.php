@@ -28,8 +28,9 @@ class ListNode
 //head 直接 指向的就是 头结点；
 //变量名 其实就是一个地址；在php中 变量名 通过 active_symbol 转换成地址，进一步得到对象；
 //  这里了解一下；
-$head = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5)))));
+$head = new ListNode(1, new ListNode(1, new ListNode(1, new ListNode(1, new ListNode(1)))));
 $middle = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new ListNode(5, new ListNode(6))))));
+
 // 循环list
 $a = new ListNode(1);
 $b = new ListNode(2);
@@ -53,6 +54,19 @@ $f->next = $g;
 $g->next = $h;
 $h->next = $h;
 $lastelecircleHead = $f;
+
+
+// $head1
+$i = new ListNode(1);
+$j = new ListNode(2);
+$k = new ListNode(3);
+$l = new ListNode(4);
+$i->next = $j;
+$j->next = $k;
+$k->next = $l;
+$head1 = $i;
+
+// $head1 =
 /**
  * 牛客-- 剑指offer；
  * JZ6 从尾到头打印链表；
@@ -338,3 +352,208 @@ function middleList($head) {
 /**
  * 删除链表的第N个结点
  */
+
+
+/**
+ * 删除链表的节点
+ * 需要找上一个结点
+ * https://leetcode.cn/problems/shan-chu-lian-biao-de-jie-dian-lcof/
+ */
+
+/**
+ * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+ *给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。返回删除后的链表的头节点。
+
+1.此题对比原题有改动
+2.题目保证链表中节点的值互不相同
+3.该题只会输出返回的链表和结果做对比，所以若使用 C 或 C++ 语言，你不需要 free 或 delete 被删除的节点
+ *
+ * @param head ListNode类
+ * @param val int整型
+ * @return ListNode类
+ */
+function deleteNode( $head ,  $val )
+{
+    // write code here
+    $dummy = new ListNode(-1);
+    $dummy->next = $head;
+    $stage = $dummy;
+
+    while ($dummy->next != null) {
+        if ($dummy->next === $val) {
+            $middle = $dummy->next->next;
+            $dummy->next = $middle;
+            break;
+        }
+        $dummy = $dummy->next;
+    }
+
+    return $stage->next;
+};
+//var_dump(deleteNode($head1,$j));die;
+//var_dump(deleteNode($head1,$i));die;
+
+
+/**
+ * https://leetcode.cn/problems/remove-duplicates-from-sorted-list-ii/
+ * 删除链表重复的元素 11
+ * // 只要是相同的都删除；
+ *
+ */
+
+/**
+ * @param $head
+ * @return null
+ * https://leetcode.cn/problems/remove-duplicates-from-sorted-list/
+ * // 要求删除 只出现一次就好了；
+ */
+function deleteDepulication($head) {
+    if ($head == null) return null;
+
+    $set = [];//set
+    $set[$head->val] = 1;
+    $stage = $head;
+    while ($head->next != null) {
+        if (isset($set[$head->next->val])) {
+            // delete need ahead node;
+            //exitsts；
+            $middle = $head->next->next;
+            $head->next = $middle;
+            // not move 指针；
+        } else {
+            $set[$head->next->val] = 1;
+            $head = $head->next;
+        }
+    }
+    return $stage;
+}
+
+//var_dump(deleteDepulication($head));die;
+
+
+// set 来求解  用集合来求解，先计算出  出现的次数，然后删除出现次数大于等于2的元素；
+//时间复杂度：
+//O(N)，对链表遍历了两次；
+//空间复杂度：
+//O(N)，需要一个字典保存每个节点值出现的次数。
+
+function deleteDuplicates($head) {
+    if ($head == null) return null;
+
+    $set = [];
+    $set[$head->val] = 1;
+    $stage = $head;
+    while ($head->next != null) {
+        if (isset($set[$head->next->val])) {
+            //exists
+            // ++1;
+            $set[$head->next->val]++;
+
+        } else {
+            // not exists
+            $set[$head->next->val] = 1;
+        }
+        $head = $head->next;
+    }
+    //头结点也可能要删除；所以 需要一个虚拟结点会好一些；// 头节点 head 结点的删除 可以给一个虚拟结点就可以了；
+    foreach ($set as $key=>$item) {
+        if ($item >=2) {
+            deleteNodezen($stage,$key);
+        }
+    }
+
+    return $stage;
+}
+
+
+// 传引用；//删除 相等元素；
+function deleteNodezen(&$head,$val) {
+    $dummy = new ListNode(-1);
+    $dummy->next = $head;
+    $stage = $dummy;
+
+    while ($dummy->next != null) {
+        if ($dummy->next->val == $val) {
+            $middle = $dummy->next->next;
+            $dummy->next = $middle;
+        } else {
+            $dummy = $dummy->next;
+        }
+    }
+
+    $head = $stage->next;
+}
+//var_dump(deleteDuplicates($head));die;
+
+//
+//deleteNodezen($head,2);
+//var_dump($head);die;
+
+//2  思维是遇到相同的结点都跳过去也就是都删除掉；// s时间复杂度是O(n)  k空间复杂度是O(1)
+
+/**
+ * 复杂链表的复制
+ * 难点： 就是找 原结点和clone结点的对应关系；
+ */
+//php 不能用哈希方式 先建立 key 和value的对应关系，但是php的key 是不能存储对象的，所以 这种方式肯定是行不通的；
+// 所以注定不能用哈希表的方式来进行遍历
+class RandomListNode{
+    var $label;
+    var $next = NULL;
+    var $random = NULL;
+    function __construct($x){
+        $this->label = $x;
+    }
+}
+
+/**
+ * @param $head
+ * 1.此解法参考了大佬的做法, 主要思路是将原链表的结点对应的拷贝节点连在其后, 最后链表变成 原1 -> 拷1 -> 原2 -> 拷2 -> ... -> null 的形式
+    2.然后我们再逐步处理对应的随机指针, 使用双指针, 一个指针指向原链表的节点, 一个指向拷贝链表的节点, 那么就有 拷->random = 原->random->next (random不为空)
+    3.最后再用双指针将两条链表拆分即可, 此算法大大优化了空间复杂度, 十分优秀
+ */
+function MyClone($head)
+{
+    // write code here copy;
+    // clone;
+
+    if ($head == null) return;
+    $stage = $head;//stage
+    // 找到对应关系
+    // 原结点->clone node ->原结点->clone node;
+   while ($head != null) {
+       //
+       $mid = $head->next;
+       $head->next = new RandomListNode($head->label);
+       $head->next->next = $mid;
+       $head = $mid->next;
+   }
+   // 双指针
+   $old = $stage;
+   $clone = $stage->next;
+   while ($clone != null) {
+       //find clone random node
+       $clone->random = $old->random == NULL ? NULL : $old->random->next;
+       //
+       $old = $old->next->next;
+       $clone = $clone->next->next;// 越界会不会是null？？
+   }
+
+   $old = $stage;
+   $clone = $stage->next;
+
+   while ($clone != null) {
+        $old->next = $old->next->next;
+        $clone->next = $clone->next->next;
+        $old = $old->next;
+        $clone = $clone->next;
+   }
+   //delete 删除原结点
+
+   return $clone;
+}
+
+var_dump(MyClone($head));die;
+// 会自动补NULl 不需要去判断空指针； c语言需要去判断空指针；
+//var_dump($head->next->next->next->next->next->next->next->next);die;// NULL
+
