@@ -147,15 +147,48 @@ class Soluation
 
         $this->com($root->right,$k);
 
-        if ((++$this->count) == $k) {
+//        if ((++$this->count) == $k) {
+//            $this->ans = $root->val;
+//            return;
+//        }
+
+        if ($k == (++$this->count)) {
             $this->ans = $root->val;
-            return;
+            return;  //因为这个com 没有return 所以不会右值的返回;
         }
 
         $this->com($root->left,$k);
     }
 }
+class Soluationbak
+{
+    public $count = 0;
+    public $ans = null;  // 注意这里右一个归的过程，所以必须需要外部变量来接收数据；
 
+    public function kthLargest($root,$k) {
+        $this->com($root,$k);
+        return $this->ans;
+    }
+
+    function com($root,$k) {  // 每一个结点都会经历过三次 记住这个核心把；一个结点要经过三次；和只有前序和后序的不一样，只需要经过一两次就可以了；
+        if ($root == null) return null;
+
+        $this->com($root->right,$k);
+
+//        if ((++$this->count) == $k) {
+//            $this->ans = $root->val;
+//            return;
+//        }
+
+        if ($k == (++$this->count)) {  //可以接收的到吗？？？？
+            $this->ans = $root->val;
+            return;  //因为这个com 没有return 所以不会右值的返回;
+        }
+        //可以接收到吗？// 如果没有返回是接收不到的把？？？
+        $this->com($root->left,$k);
+
+    }
+}
 $obj123 = new Soluation();
 $k = 2;
 
@@ -169,3 +202,60 @@ $k = 2;
 3.保证n个节点的值不一样
  */
 
+function KthNode( $proot ,  $k )
+{
+    // write code here
+
+
+}
+
+/**
+ * //双指针吗？  不同的遍历方向来判断；
+ * 对称二叉树
+ */
+
+class Solution1
+{
+
+    /**
+     * @param TreeNode $root
+     * @return Boolean
+     *
+     */
+    function isSymmetric($root) {
+        return $this->check($root,$root);
+    }
+    //
+    function check($p,$q) {
+        ///全部是全部是null 那么就是相等的意思；// 判断到结束了；全部是null;
+        if (!$p && !$q) return true;
+        // 有一个是空 另外一个不是空 那么返回false;
+        if (!$p || !$q) return false;
+
+        return ($p->val == $q->val && $this->check($p->left,$q->right) && $this->check($p->right, $q->left));
+    }
+}
+
+
+/**
+ * 判断是否是平衡二叉树；
+ * 就是左右子树的高度相差不要超过1；
+ */
+
+class Solution2 {
+
+    /**
+     * @param TreeNode $root
+     * @return Boolean
+     */
+    function isBalanced($root) {
+        if ($root == null) return true;
+
+        return abs($this->heigh($root->left) - $this->heigh($root->right)) <= 1 && $this->isBalanced($root->left) && $this->isBalanced($root->right);
+    }
+
+    function heigh($root) {
+        if ($root == null) return;  // php 中 NULL == 0；
+        return max($this->heigh($root->left), $this->heigh($root->right)) + 1;
+    }
+}
