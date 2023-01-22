@@ -106,10 +106,55 @@ class Solution2 {
     }
 }
 
+
+
 //$arr2 = [4,3,2,7,8,2,3,1];
 $arr2 = [9,9,4,10,8,5,2,2,7,7];
-$obj2 = new Solution2();
+//$obj2 = new Solution2();
 
-var_dump($obj2->findDuplicates($arr2));die;
+//var_dump($obj2->findDuplicates($arr2));die;
 
+class Solution3 {
+
+    /**
+     * @param Integer[] $nums
+     * @return Integer[]
+     */
+    function findDuplicates($nums) {
+        $duplicates = [];
+        $n = count($nums);
+        for ($i = 0; $i < $n; $i++) {
+            $num = $nums[$i];
+            $index = abs($num) - 1;
+            //第一次被遍历 就代表 > 0
+            if ($nums[$index] > 0) {
+                $nums[$index] = -$nums[$index];
+            } else {// 小于0 就代表被遍历过一次了，就需要插入；所以不需要 去重；
+                $duplicates[]  = $index + 1; // 因为减去了1  所以还需要再加上1
+            }
+        }
+        return $duplicates;
+    }
+}
+$obj3 = new Solution3();
+var_dump($obj3->findDuplicates($arr2));die;
+
+///
+/// class Solution {
+//    public List<Integer> findDuplicates(int[] nums) {
+//        List<Integer> duplicates = new ArrayList<Integer>();
+//        int n = nums.length;
+//        for (int i = 0; i < n; i++) {
+//            int num = nums[i];
+//            int index = Math.abs(num) - 1;
+//            if (nums[index] > 0) {
+//                nums[index] = -nums[index];
+//            } else {
+//                duplicates.add(index + 1);
+//            }
+//        }
+//        return duplicates;
+//    }
+//}
+//
 

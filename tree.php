@@ -211,7 +211,7 @@ function KthNode( $proot ,  $k )
 
 /**
  * //双指针吗？  不同的遍历方向来判断；
- * 对称二叉树
+ * 对称二叉树 是否对称吗？？
  */
 
 class Solution1
@@ -259,3 +259,101 @@ class Solution2 {
         return max($this->heigh($root->left), $this->heigh($root->right)) + 1;
     }
 }
+/**
+ *  每个结点所在的层数  输出结点 和结点所在的层数
+ * root 默认是1 层
+ * //             13
+//        10         16
+//    9      11   14
+ */
+
+class Solution3
+{
+    public function nodeLevel($root,$level) {
+        if ($root == null) return;
+//        print_r($root->val."---">$level);
+        printf("节点 %d 在第 %d 层 \n",$root->val,$level);
+        $this->nodeLevel($root->left,$level + 1);
+        $this->nodeLevel($root->right,$level + 1);
+    }
+}
+//$obj3 = new Solution3();
+//$obj3->nodeLevel($root,1);
+
+/**
+ * Class Solution4
+ * 如何打印出每个节点的左右子树各有多少节点？
+ * return 树的总节点数  返回的是树的总节点数
+ *
+ */
+class Solution4 
+{
+    public function numsNode($root) {
+        if ($root == null) return 0;
+        $leftnum = $this->numsNode($root->left);
+        $rightnum = $this->numsNode($root->right);
+        printf("节点 %d 的左子树节点数目 %d 右子树节点数目 %d \n",$root->val,$leftnum,$rightnum);
+        return $leftnum + $rightnum  + 1; //左子树  + 右子树
+    }
+}
+
+//$obj4 = new SOlution4();
+//echo $obj4->numsNode($root);
+/**
+ * https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/
+ * 镜像
+ */
+class Solution5 {
+
+    /**
+     * @param TreeNode $root
+     * @return TreeNode
+     */
+    function mirrorTree($root) {  // 判断是否对称
+        if ($root == null) return null;
+        $tmp = $root->left;
+        $root->left = $root->right;
+        $root->right = $tmp;
+
+        $this->mirrorTree($root->left);
+        $this->mirrorTree($root->right);
+        return $root;
+    }
+
+}
+
+/**
+ * JZ78 把二叉树打印成多行
+ * 层级遍历 而且是多行；】
+ * 输入：
+{1,2,3,#,#,4,5}
+复制
+返回值：
+[[1],[2,3],[4,5]]
+ */
+class Solution6
+{
+    function PrintBinaryTreeToMulLine( $root )
+    {
+        // write code here
+        $queue =  [];
+        array_push($queue,$root);
+        $res = [];
+
+        while (!empty($queue)) {
+            $n = count($queue);
+            for ($i = 0; $i < $n; $i++) {
+                $tmp = array_shift($queue);
+                $ret[] = $tmp;
+
+                if (isset($tmp->left)) array_push($queue,$tmp->left);
+                if (isset($tmp->right)) array_push($queue,$tmp->right);
+            }
+            $res[] =  $ret;
+        }
+        return $res;
+    }
+}
+$obj6 = new Solution6();
+var_dump($obj6->PrintBinaryTreeToMulLine($root));die;
+
