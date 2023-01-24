@@ -6,6 +6,8 @@
  * Time 12:17
  */
 
+// 嵌套循环设置为 - 1； 无限嵌套循环；
+ini_set('xdebug.max_nesting_level', -1);
 class TreeNode
 {
     public $val;
@@ -211,7 +213,7 @@ function KthNode( $proot ,  $k )
 
 /**
  * //双指针吗？  不同的遍历方向来判断；
- * 对称二叉树 是否对称吗？？
+ *  是否对称吗？？
  */
 
 class Solution1
@@ -239,7 +241,7 @@ class Solution1
 
 /**
  * 判断是否是平衡二叉树；
- * 就是左右子树的高度相差不要超过1；
+ * 任意一个结点的左右子树的高度相差不要超过1；
  */
 
 class Solution2 {
@@ -273,6 +275,7 @@ class Solution3
         if ($root == null) return;
 //        print_r($root->val."---">$level);
         printf("节点 %d 在第 %d 层 \n",$root->val,$level);
+
         $this->nodeLevel($root->left,$level + 1);
         $this->nodeLevel($root->right,$level + 1);
     }
@@ -354,6 +357,302 @@ class Solution6
         return $res;
     }
 }
-$obj6 = new Solution6();
-var_dump($obj6->PrintBinaryTreeToMulLine($root));die;
+//$obj6 = new Solution6();
+//var_dump($obj6->PrintBinaryTreeToMulLine($root));die;
+
+/**
+ * 寻找第k小的元素
+ * 230. 二叉搜索树中第K小的元素
+ * // 会遍历右子树吗？？？？
+ */
+
+class Solution7 {
+
+    /**
+     * @param TreeNode $root
+     * @param Integer $k
+     * @return Integer
+     */
+    public $ans = 0;
+    public $count = 0;
+
+    function kthSmallest($root, $k) { // 第k个最小元素；
+        $this->help($root,$k);
+        return $this->ans;
+    }
+
+    function help($root,$k) {
+        if ($root == null) return null;
+
+        $this->help($root->left,$k);
+
+        // 中序遍历 只能靠 全局变量来返回数据吗？？？？
+        if ($k == (++$this->count)) {
+            $this->ans = $root->val;
+            return;// 在这里是直接终止；
+        }
+
+        $this->help($root->right,$k); // 遍历右子树之后的终止；
+    }
+}
+
+/**
+ * 538. 把二叉搜索树转换为累加树
+ * 累加树
+ */
+
+class Solution8 {
+
+    /**
+     * @param TreeNode $root
+     * @return TreeNode
+     */
+    // 遍历一遍加上就可以了； 加上字段size；
+    public $sum = 0;
+    // 注意对象传递句柄的概念
+    function convertBST($root) {
+        if ($root == null) return null;
+        $this->convertBST($root->right);
+        $this->sum += $root->val;
+        $root->val = $this->sum;
+        $this->convertBST($root->left);
+        // $this->traverse($root); //引用； // 第二钟方案，直接用一个函数来返回；保存一下$root;就是一开始的root；
+        // 这里一层层的传递回来还不如第二重方案；
+        return $root;// 虽然回传了数据但是没有 函数去接收 ，所以相当于只返回了第一层的数据；// 所以种类还可以return；自己理解一下；
+    }
+
+    // public function traverse($root) {
+    //     if ($root == null) return null;
+    //     $this->convertBST($root->right);
+    //     $this->sum += $root->val;
+    //     $root->val = $this->sum;
+    //     $this->convertBST($root->left);
+    // }
+
+}
+
+/**
+ * 二叉树的中序遍历
+ * 返回的是一个数组； // 遍历的数组；
+ */
+class Solution9 {
+
+    /**
+     * @param TreeNode $root
+     * @return Integer[]
+     */
+    public $res = [];
+
+    function inorderTraversal($root) {
+        $this->help($root);
+        return $this->res;
+    }
+
+    public function help($root) {
+        if ($root == null) return null;
+        $this->inorderTraversal($root->left);
+        $this->res[] = $root->val;
+        $this->inorderTraversal($root->right);
+    }
+}
+/**
+ * 二叉树的重建
+ * 知道前序和 中序 然后去重建二叉树
+ * 剑指 Offer 07. 重建二叉树
+ */
+class Solution10 {
+
+    /**
+     * @param Integer[] $preorder
+     * @param Integer[] $inorder
+     * @return TreeNode
+     */
+
+    // 前序遍历// 结点值并不重复；
+    function buildTree($preorder, $inorder) {
+        if (empty($preorder)) return null;
+        $rootval = $preorder[0];  // root 根结点
+        $root = new TreeNode($rootval);
+        //只有一个结点
+        if (count($preorder) == 1) return $root;  // 这里的结点的左孩子或者有孩子 回去接住他；
+        // inorder index  == roo tval 的索引
+        $n = count($inorder);
+        for ($index = 0; $index < $n; $index++) {
+            if ($inorder[$index] == $rootval) {
+                break;
+            }
+        }
+        //切中序 分为两部分  左中序  和  右中序；
+        $inleft = array_slice($inorder,0,$index);
+        $inright = array_slice($inorder,$index + 1);
+
+        // 切前序 分为 左前序  和 右前序 两部分；
+        $len = count($inright);
+        //array_slilce 有问题；
+        // $len == 0 的时候会出问题；
+        //  0的情况会有问题； 卧槽；妈的
+        if ($len == 0) {
+            $preright = array();
+            $preleft = array_slice($preorder,1);
+        } else {
+            $preright = array_slice($preorder,(-$len));
+            $preleft = array_slice($preorder,1,(-$len));
+        }
+
+
+        //递归； 递归左右结点；
+        //递归； 递归左右结点；
+        $root->left = $this->buildTree($preleft,$inleft);
+
+        $root->right = $this->buildTree($preright,$inright);
+
+        return $root;
+    }
+}
+$preorder1 = [1,2];
+$inorder1 = [2,1];
+
+//$obj10 = new Solution10();
+//var_dump($obj10->buildTree($preorder1,$inorder1));die;
+
+
+/**
+ * 重建二叉树
+ * 通过 中序和后序来重建二叉树
+ */
+// 对上面的优化 对长度做一个匹配
+class Solution101 {
+
+    /**
+     * @param Integer[] $preorder
+     * @param Integer[] $inorder
+     * @return TreeNode
+     */
+
+    // 前序遍历// 结点值并不重复；
+    function buildTree($preorder, $inorder) {
+        if (empty($preorder)) return null;
+        $rootval = $preorder[0];  // root 根结点
+        $root = new TreeNode($rootval);
+        //只有一个结点
+        if (count($preorder) == 1) return $root;  // 这里的结点的左孩子或者有孩子 回去接住他；
+        // inorder index  == roo tval 的索引
+        $n = count($inorder);
+        for ($index = 0; $index < $n; $index++) {
+            if ($inorder[$index] == $rootval) {
+                break;
+            }
+        }
+        //切中序 分为两部分  左中序  和  右中序；
+        $inleft = array_slice($inorder,0,$index); // 用长度来左匹配；
+        $inright = array_slice($inorder,$index + 1); //
+
+        // 切前序 分为 左前序  和 右前序 两部分；
+        $lenleft = count($inleft);
+        $lenright = count($inright);
+        //array_slilce 有问题；
+        // $len == 0 的时候会出问题；
+        //  0的情况会有问题； 卧槽；妈的
+
+        $preleft = array_slice($preorder,1,$lenleft);
+        $preright = array_slice($preorder,1 + $lenleft);
+
+
+        //递归； 递归左右结点；
+        //递归； 递归左右结点；
+        $root->left = $this->buildTree($preleft,$inleft);
+
+        $root->right = $this->buildTree($preright,$inright);
+
+        return $root;
+    }
+}
+$preorder101 = [1,2];
+$inorder101 = [2,1];
+
+//$obj101 = new Solution101();
+//var_dump($obj101->buildTree($preorder101,$inorder101));die;
+/**
+ * 654-leetcode --- 最大二叉树
+ *
+ */
+class Solution11
+{
+
+    /**
+     * @param Integer[] $nums
+     * @return TreeNode
+     */
+
+    function constructMaximumBinaryTree($nums) {
+        // 结束条件
+        return  $this->help($nums,0,count($nums) - 1);
+
+//        if (empty($nums)) return null;
+//        //找最大值  分区； // 分为左边和右边分区
+//        $partition = $this->partition($nums);
+//
+//        $head = new TreeNode($nums[$partition[0]]);
+//
+//        $head->left = $this->constructMaximumBinaryTree($partition[1]);
+//        $head->right = $this->constructMaximumBinaryTree($partition[2]);
+//
+//        return $head;
+
+    }
+
+    //找到最大值； 最大值的key 找到最大值的key；这是分区的最关键部分；
+    public function partition($nums) {
+        $key = -1; // 这里不能设置为null
+        $maxval = PHP_INT_MIN; // z这里不能设置为null 这个也是以前错误的原因
+
+        foreach ($nums as $k=>$v) {
+            if ($maxval < $v) {  // 大于
+                $key = $k;
+                $maxval = $v;
+            }
+        }
+
+        $left = array_slice($nums,0,$key);//这里就使用 函数了 所以不太对；有问题；要全部用自己的代码去实现；
+        // 省略 就是到字符串的末尾
+        $right = array_slice($nums,$key + 1);
+
+        return [$key,$left,$right];
+    }
+
+    public function help($nums,$left,$right) {
+        if ($right < $left) return null;
+       $key =  $this->getMax($nums,$left,$right);//应该是这个分段的最大值；
+
+       $head = new TreeNode($nums[$key]);
+       $head->left = $this->help($nums,$left,$key - 1);
+       $head->right = $this->help($nums,$key + 1,$right);
+       // 左右子树的结点
+       return $head;
+    }
+
+    public function getMax($nums,$left,$right) {
+        $key = -1;
+        $maxval = PHP_INT_MIN;
+
+        for ($i = $left; $i <= $right;$i++) {
+            if ($maxval < $nums[$i]) {
+                $key = $i;
+                $maxval = $nums[$i];
+            }
+        }
+//        foreach ($nums as $k=>$v) {
+//            if ($maxval < $v) {  // 大于
+//                $key = $k;
+//                $maxval = $v;
+//            }
+//        }
+        return $key;
+    }
+}
+
+//$arr11 = [3,2,1,6,0,5];
+//$obj11 = new Solution11();
+//var_dump($obj11->constructMaximumBinaryTree($arr11));die;
+
 
