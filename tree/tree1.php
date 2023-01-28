@@ -19,6 +19,33 @@ class TreeNode
         $this->val = $val;
     }
 }
+
+
+//             13
+//        10         16
+//    9      11   14
+$a = new TreeNode(13);
+$b = new TreeNode(10);
+$c = new TreeNode(16);
+$d = new TreeNode(9);
+$e = new TreeNode(11);
+$f = new TreeNode(14);
+// root == $a;
+$a->left =  $b;
+$b->left = $d;
+$b->right = $e;
+$a->right = $c;
+$c->left = $f;
+$root = $a;
+/**
+ * inorder 中序
+ */
+function inorderBinary($root) {
+    if ($root == null) return null;
+    inorderBinary($root->left);
+    echo $root->val."---";
+    inorderBinary($root->right);
+}
 /**
  * leetcode 路径和
  * //注意空指针；
@@ -160,10 +187,201 @@ class Solution14 {
 }
 
 
-$root14 = new TreeNode(1);
-$node2 = $root14->left = new TreeNode(2);
-$node3 = $root14->right = new TreeNode(3);
-$node2->right = new TreeNode(5);
+//$root14 = new TreeNode(1);
+//$node2 = $root14->left = new TreeNode(2);
+//$node3 = $root14->right = new TreeNode(3);
+//$node2->right = new TreeNode(5);
 
-$obj14 = new Solution14();
-var_dump($obj14->binaryTreePaths($root14));die;
+//$obj14 = new Solution14();
+//var_dump($obj14->binaryTreePaths($root14));die;
+
+
+/**
+ * 二叉树的序列化和反序列化
+ * 剑指 Offer II 048. 序列化与反序列化二叉树
+ * 最后一定要解决 鲁棒性;就是一些特殊情况；一定要考虑到；
+ */
+
+/**
+ * Definition for a binary tree node.
+ * class TreeNode {
+ *     public $val = null;
+ *     public $left = null;
+ *     public $right = null;
+ *     function __construct($value) { $this->val = $value; }
+ * }
+ */
+
+
+class Codec {
+
+    const SEP = ",";
+    const NULL = "#";
+
+    function __construct() {
+
+    }
+
+    /**
+     * @param TreeNode $root
+     * @return String
+     *  仅仅有一个遍历是不能复原的；
+     * 但是 包含中序和后序 遍历会变得很长  带宽会变长，所以要重新组织新的序列化；
+     * 重建二叉树 要求不能有重复的数字；
+     * // 假如我先用  前序遍历的方法；
+     * // 注意 因为是二叉树的序列化，所以 我们这里一定要 保留 #
+     */
+
+    public $arr = [];
+
+    function serialize1($root) {
+        $this->enseriable1($root);
+        //  数组转换成字符串； // 用，来隔开；
+        return implode($this->arr,self::SEP);
+    }
+
+    protected function enseriable1($root) {
+        if ($root == null) {
+            array_push($this->arr,"#");
+            return;
+        }
+
+       array_push($this->arr,$root->val);
+       $this->enseriable1($root->left);
+       $this->enseriable1($root->right);
+    }
+
+    // 第二种解决方案
+    function serialize($root) {
+        $arr = [];
+        //传引用 其实可以使用全局变量；$arr;
+        $this->enseriable($root,$arr);
+        //
+        return implode($arr,',');//  数组 转换成字符串
+    }
+    // 这里传递的是引用才会 当一个全局变量来使用；相当于  当然你也可以使用全局变量
+    protected function enseriable($root,&$arr) {
+        if ($root == null) {
+            array_push($arr,self::NULL);  // # == null  不然 null没法转换成字符串；
+            return;
+        }
+        array_push($arr,$root->val);
+        $this->enseriable($root->left,$arr);
+        $this->enseriable($root->right,$arr);
+    }
+
+    /**
+     * @param String $data
+     * @return TreeNode
+     */
+    function deserialize($data) {
+        $data = explode(",",$data);
+//        var_dump($data);die;
+        //root
+        return $this->deseriable($data);
+    }
+
+    protected function deseriable(&$data) {// 这里必须要用引用；
+        if (empty($data)) return null;  // noedes 结束
+        // 前序遍历的反序列化
+        $rootval = array_shift($data);
+
+        if ($rootval == self::NULL) {
+            // 树的结点 结束了
+            return null;
+        }
+
+        $root = new TreeNode($rootval);
+
+        //为null 也要去做遍历
+        $root->left = $this->deseriable($data);
+        $root->right = $this->deseriable($data);
+
+        return $root;
+    }
+}
+
+
+//  $ser = new Codec();
+//  $deser = new Codec();
+//$data = $ser->serialize($root);// 引用
+//$data1 = $ser->serialize1($root); //全局变量
+//var_dump($data);
+//  var_dump($data1);die;
+//  die;
+//  $ans = $deser->deserialize($data);
+//  inorderBinary($root);
+// inorderBinary($ans);
+//  var_dump($ans);die;
+//print_r($ans);
+
+class Codec1
+{
+
+    const SEP = ",";
+    const NULL = "#";
+
+    public $res = [];
+
+    function __construct() {
+
+    }
+
+    /**
+     * @param TreeNode $root
+     * @return String
+     * 前序 转换成字符串json  序列化
+     */
+
+    function serialize($root) {
+        // if ($root == null) return []; // 整体为null；
+        $this->help1($root);
+
+        return implode(self::SEP, $this->res);
+    }
+
+    function help1($root) {
+        if ($root == null) {
+            array_push($this->res, self::NULL);
+            return;
+        }
+
+        array_push($this->res, $root->val);
+
+        $this->help1($root->left);
+        $this->help1($root->right);
+    }
+
+    /**
+     * @param String $data
+     * @return TreeNode
+     * 前序的反序列化
+     */
+    function deserialize($data) {
+        $data = explode(self::SEP, $data);//arr
+//        var_dump($data);die;
+        return $this->help($data);
+    }
+
+    function help(&$data) {
+
+        //endx
+        if (empty($data)) return null;
+        //
+        $rootval = array_shift($data);
+        if ($rootval == self::NULL) {
+            return null;
+        }
+
+        $root = new TreeNode($rootval);
+
+        $root->left = $this->help($data);
+        $root->right =
+            $this->help($data);
+
+        return $root;
+    }
+}
+$cesgu  =  new  Codec1();
+$str =  $cesgu->serialize($root);
+var_dump($cesgu->deserialize($str));die;
