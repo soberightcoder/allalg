@@ -48,11 +48,28 @@ function inorderBinary($root) {
 
 /**
  *  236. 二叉树的最近公共祖先
+ *  很经典的一个题型;
+ *  这个题目的暴力求解 可以找到qp的路径然后 找到 最靠后的一个结点；找到公共结点；
+ * 需要好好看一下 很经典
  */
 class Solution1
 {
     public function lowestCommonAncestorlk($root,$p,$q) {
-
+        //end1 condition
+        if ($root == null) return null;
+        // end2 condition  第二个结束条件 遇到就会回退; //找到pq结点结束；end
+        if ($root->val == $p->val || $root->val == $q->val) return $root;
+        // 回溯
+        //左子树返回的结果 是否遇到结点q 或者p
+        $left  = $this->lowestCommonAncestorlk($root->left,$p,$q);
+        //右子树返回的结果
+        $right  = $this->lowestCommonAncestorlk($root->right,$p,$q);
+        // 后序遍历 可以处理子树返回的结果；
+        if ($left != null && $right != null) return $root;//
+        if ($left != null && $right == null) return $left;// 左结点存在 但是右节点为null 继续回溯 向上去找；
+        if ($left == null && $right != null) return $right;
+        //都是null
+        return null;
     }
 }
 
