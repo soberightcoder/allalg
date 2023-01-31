@@ -136,8 +136,8 @@ class Solution3 {
         return $duplicates;
     }
 }
-$obj3 = new Solution3();
-var_dump($obj3->findDuplicates($arr2));die;
+//$obj3 = new Solution3();
+//var_dump($obj3->findDuplicates($arr2));die;
 
 ///
 /// class Solution {
@@ -158,3 +158,61 @@ var_dump($obj3->findDuplicates($arr2));die;
 //}
 //
 
+/**
+ * 数组去重问题；
+ * question1 : space : O(n) time : (n)
+ */
+class Question1
+{
+    public function unique($arr) {
+        $set = []; // 额外空间
+        $n = count($arr);
+        for ($i = 0; $i < $n; $i++) {
+            if (isset($set[$arr[$i]])) {
+                continue;
+            } else {
+                $set[$arr[$i]] = 1;
+            }
+        }
+        return array_keys($set);//自动去重；
+    }
+}
+
+/**
+ * Class Question2
+ * space O(1)原地 time O(n);
+ * 数组千万不要在数组间去删除 ，一般先交换到数组末尾然后去删除；
+ * 0 - q 是去重的；剩下的是重复的；但是并不包含全部的重复，仅仅是节约空间；
+ */
+class Question2
+{
+    public function unique($arr) {
+        //排序 会有局限性
+        sort($arr); // nlogn// 保证有序性把；
+        return $this->help($arr);
+    }
+
+    public function help($arr) {
+        //
+        $n = count($arr);
+        $q = 0;
+        $p = 1;
+        // 重复的部分 被覆盖掉了；
+        while ($p < $n) {
+            if ($arr[$q] != $arr[$p]) {
+                $q++;
+                $arr[$q] = $arr[$p];
+            }
+            $p++;
+        }
+        // 0 - q 才是不重复的部分；所以不重复的长度是q+1;
+        //
+        echo $q;
+        return $arr;
+    }
+}
+$arrq1 = [1,2,3,2,3,5,6];
+//$objq1 = new Question1();
+//var_dump($objq1->unique($arrq1));die;
+$objq2 = new Question2();
+var_dump($objq2->unique($arrq1));die;
