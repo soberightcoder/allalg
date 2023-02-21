@@ -316,7 +316,3 @@ class BrowserHistory {
  * $ret_2 = $obj->back($steps);
  * $ret_3 = $obj->forward($steps);
  */
-/**
- * leetcode - 剑指 Offer II 041. 滑动窗口的平均值
- *
- */
