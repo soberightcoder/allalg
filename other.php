@@ -37,30 +37,35 @@ class Solution {
         $right = $intervals[0][1];
 
         $n = count($intervals);
-        $res = 0; // 覆盖的区间
-
+        $res = $n; // 覆盖的区间
         for ($i = 1; $i < $n; $i++) {
             $invt = $intervals[$i]; //
             //1. 覆盖； 前面的覆盖
             // 第二个 线段的比较；
             // 第一个是否覆盖 第二个；因为 按照开始排序了，只能前面的覆盖后面的；
             // 覆盖删除
+            //相等的时候逆序，是因为，当相同的时候 $right 不会发生变化；
             if ($left <= $invt[0] && $right >= $invt[1]) {
-                $res++;
+                $res--;
             }
             // 相交 合并 // 注意 invt[1] == $right   只在 right相交；合并
             if ($right >= $invt[0] && $right <= $invt[1]) {
                 $right = $invt[1];
             }
+            echo $left."--->".$right;
+            echo "\n";
             // 不相交  区间不相交
-            if ($left < $invt[0]) {
+            // 因为是左边界有序的！
+            if ($right < $invt[0]) {
                 $left = $invt[0];
                 $right = $invt[1];
             }
         }
-        return $n - $res;
+        return $res;
     }
 }
 $obj = new Solution();
-$intervals =  [[1,4],[3,6],[2,8],[2,7]];// 2
+// $intervals =  [[1,4],[3,6],[2,8],[2,7]];// 2
+// $intervals = [[66672,75156],[59890,65654],[92950,95965],[9103,31953],[54869,69855],[33272,92693],[52631,65356],[43332,89722],[4218,57729],[20993,92876]];
+$intervals = [[1,3],[3,8],[2,6]];//注意这里做排序了，肯定是，2肯定排在3前面；
 echo $obj->removeCoveredIntervals($intervals);

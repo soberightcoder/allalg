@@ -314,4 +314,56 @@ class MyStack1 {
 /**
  * leetcode -- 347 前k个高频元素；
  *  优先队列 大顶堆 和小顶堆的应用；
+ * 约定：假设这里数组的长度为n
+ *题目分析：本题希望我们返回数组排序之后的倒数第k 个位置。
  */
+class Solution347 {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $k
+     * @return Integer[]
+     */
+    function topKFrequent($nums, $k) {
+        $map = [];
+        foreach ($nums as $num) {
+            $map[$num]++;
+        }
+
+        $minheap = new MyMinHeap();
+        // 遍历map;
+        foreach ($map as $index => $item) {
+            if ($minheap->count() < $k) {
+                // 上浮的过程；
+                $minheap->insert([$index, $item]);
+                //比较要插入的值是否比 最小值大，大 就要删除一个然后插入；
+            } else if ($minheap->top()[1] < $item){
+                //满了 插入一个删除一个；
+                $minheap->extract();
+                $minheap->insert([$index, $item]);
+            }
+        }
+        $ret = [];
+        while (!$minheap->isEmpty()) {
+            $ret[] = $minheap->extract()[0];
+        }
+        return $ret;
+    }
+}
+//重写了排序规则;
+// 自定义了排序规则；
+class MyMinHeap  extends SplMinHeap
+{
+    //必须要返回 int 吗？//切换版本！ 
+    //这里做了限制？？？
+    protected function compare ($value1, $value2) {
+        return $value2[1] - $value1[1];
+    }
+}
+
+
+//$arr347 = [1,1,1,2,2,3];
+//$obj347 = new Solution347();
+//$res = $obj347->topKFrequent($arr347, 2);
+//var_dump($res);die;
+$a = new stdClass();

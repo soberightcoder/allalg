@@ -144,10 +144,12 @@ class Heap
         $len = count($arr);
         if ($len == 0 || $len == 1) return;
         while ($this->heapsize > 0) {
-
+            //这里就是extract $this->extract();//
+            // $this->extract(); 等价下面的一系列操作；
             $this->swap($this->heap[0], $this->heap[$this->heapsize - 1]);
             $this->heapsize--;
             $this->downHeapify(0);
+
         }
     }
 }
