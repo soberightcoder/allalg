@@ -33,7 +33,6 @@ $head = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4, new List
  * leetcode --- 203 移除链表元素
  * 链表的移除需要知道上一个节点；
  * 为了后面返回$head 指针所以 要定义一个临时指针去遍历
- * 
  * 最主要的原因，是链表的删除和增添，当删除头节点和删除其他节点的方式是不一样的，需要分类去讨论，这边加一个虚拟节点直接进行操作；
  *  */
 
@@ -46,8 +45,9 @@ function removeElements($head, $val)
     // NULL head == NULL
     // 只有一个元素
 
-    // 大于等于1个元素怎么办；
+    // 大于等于1个元素怎么办；因为有虚拟节点所以所有的节点都判断了；
     while ($cur) {
+        //删除 要知道上一个节点；
         if (isset($cur->next) && $cur->next->val == $val) {
             //删除一个链表的元素；
             //删除了之后就不需要移动cur指针了；
@@ -63,6 +63,7 @@ function removeElements($head, $val)
 
 /**
  * 链表的翻转 使用的是 双指针；
+ * 链表的翻转； --- 经典题型；
  */
 
 function reverseList($head)
@@ -70,8 +71,6 @@ function reverseList($head)
     $cur = $head;
     $pre = NULL;
     while ($cur) {
-
-        //
         $store = $cur->next;
         $cur->next = $pre;
         $pre = $cur;
@@ -235,19 +234,24 @@ class MyLinkedList
 /**
  * 两两交换链表中的节点；
  * 也是需要虚拟机节点，不然第一个点和中间的节点是不一样的；
+ * leetcode --- 24;
  */
 
  function swapPairs($head) {
+    //链表的特殊情况也要考虑；链表是NULL 或者链表只有一个节点，都需要去考虑；
+    //特殊情况；
     if ($head == NULL || $head->next == NULL) return $head;
-    // 初始化；
+    // 初始化； --- 虚拟节点；
     $dummyNode = new ListNode();
-    $dummyNode->next = $head; 
-    $newHead = $head->next;
+    $dummyNode->next = $head;
+
+    $newHead = $head->next; // 第二个节点；
+
     $r = $head->next; 
     $l = $head;
 
     while ($r) {
-        //虚拟节点也要去移动两个；
+        //虚拟节点也要去移动两个； 先保存一下；不然就乱套了；
         $midl = $l->next->next;
         $midr = $r->next->next;
         //交换规则
@@ -258,11 +262,41 @@ class MyLinkedList
 
         $r = $midr;
         $l = $midl;
+        // 这个也要移动两次；妈的；
         $dummyNode = $dummyNode->next->next;
     }
     //双指针 每次去移动两个指针；
     return $newHead; 
 }
+/**
+ * more 
+ * 注意结束条件；偶数，或者奇数的结束条件；
+ * 偶数 就是 $cur->next == NULL 
+ * 奇数 就是 $cur->next->next == NULL;
+ */
+function swapPairs1($head) {
+    if ($head == NULL && $head->next == NULL) return $head;
+    $dummy = new ListNode();
+    $dummy->next = $head;
+    $cur = $dummy;
+    //结束条件； 注意一下；
+    // $cur->next-> == NULL  || $cur->next == NULL也是代表条件结束；分别代表奇数和偶数；
+    // 不能翻着写，反着写会发生空指针异常；
+    //结束条件的判断 这点会很重要；
+    while ($cur->next && $cur->next->next ) {
+        $tmp = $cur->next;
+        $tmp1 = $cur->next->next->next;
+
+        //swap
+        $cur->next = $cur->next->next;
+        $cur->next->next = $tmp;
+        $tmp->next = $tmp1;
+        //cur 增长；
+        $cur = $cur->next->next;
+    }
+    return $dummy->next;
+}
+var_dump(swapPairs(new ListNode(1,new ListNode(2))));die;
 
 /**
  * 删除链表倒数第N个节点；
@@ -273,6 +307,8 @@ class MyLinkedList
  * 1 <= $n <= $sz
  * 思想：
  * fast 先走N+1  ，然后快慢指针一起走，快指针走到低，慢指针所停下的位置就是倒数N+1；
+ * 
+ * 快慢指针保持一个距离，当快指针到了链表结尾，满指针正好是n+1位置；需要注意的是，删除要直到上一个节点；
  *  */
 
  function removeNthFromEnd($head, $n) {
@@ -281,13 +317,15 @@ class MyLinkedList
     $cur = $dummyHead;
     $fast = $cur;
     $slow = $cur;
-    //$fast 先走n-1 个节点；
+    //$fast 先走n+1 个节点；
+    // 走n + 1次；第一次就是第一个节点，走n+1次就是第n+1个节点；
+    // dummyHead 算是第0个节点；
     $n = $n + 1;
     while($n) {
         $fast = $fast->next;
         $n--;
     }
-    //
+    //fast 走到最后；
     while($fast) {
         $fast = $fast->next;
         $slow = $slow->next;
@@ -309,17 +347,24 @@ class MyLinkedList
 function hasCycle($head) {
     $fast = $head;
     $slow = $head;
-    while ($fast)  {
-        $fast = $fast->next->next;
+
+    while ($fast && $fast->next != NULL)  {
+        //$fast !== NULL 但是下一个节点有可能是NULL；
+        //注意 NULL->next 是不存在的呀；
+        $fast = $fast->next->next;  // 注意出现空指针异常；
         $slow = $slow->next;
         // 有可能存在fast slow  全部都是NULL的情况；所以这里判断必须 fast 不能为NULL；
         // $fast === $slow;
-        if ($fast === $slow && isset($fast)) {
+        //快指针不能为NULL；
+        //先去移动 再去做判断；需要判断是否为NULL；
+        if ($fast === $slow) {
             return true;
         }
     }
+
     return false;
 }
+// var_dump(hasCycle($head));die;
 /**
  * 判断一个链表是否有环，并且判断环的入口；
  * leetcode --- 142
@@ -329,6 +374,7 @@ function detectCycle($head) {
     $fast = $head;
     $slow = $head;
     while($fast && $fast->next != NULL) {
+        // 出现了 这个$fast->next->next 就必须 保证$fast->next != null;
         $fast = $fast->next->next;
         $slow = $slow->next;
         if ($slow === $fast) {
@@ -370,6 +416,7 @@ function detectCycle($head) {
  * 12345
  * 加上虚拟节点  $n = 1就是第一个节点；2就是第二个节点；3 就是第三个节点；
  * 包含 虚拟节点;
+ * 稍微注意一下细节就行了；
  *  */ 
 // $n = 3;
 // $dummyHead = new ListNode(-1,$head);
@@ -396,4 +443,30 @@ var_dump($cur);//4
 
 /**
  * 对于一些边界条件，或者一些特殊情况，只能带入参数去不断尝试；
+ * 比如 ： 链表只有一个节点，或者链表为NULL的情况；这两种特殊条件都需要去考虑；
  */
+
+
+ /**
+  *  注意判断 是否为NULL；
+  *  尤其是链表next 之后下一个是否为NULL的判断；
+  *  用isset() 来判断是否为NULL；
+  * 每一次 next 都需要去做 是否为NULL的判断；注意！！！！
+  * 
+  * * */
+
+  /**
+   * 
+   * $fast != NULL  但是当你做 $fast->next->next 的判断的时候  也要保证$fast->next != NULL 才行；
+   * 注意空指针异常的问题， 需要判断 $fast->next != NULL 才可以；
+   */
+
+
+/**
+ * 无论是节点的删除，或者节点的插入，都需要直到上一个节点；才能删除或者插入；
+ */
+
+/**
+ * 注意空指针 异常；
+ * 在访问节点之前，始终检查节点是否为空。在对链表节点进行操作之前，应该先判断节点是否为空，以避免空指针异常的发生。
+ *  */ 

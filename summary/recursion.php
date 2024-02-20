@@ -3,7 +3,6 @@
 /**
  * 
  * 基础知识
- * 
  */
 
 use function Index\reverseArray;
@@ -97,20 +96,59 @@ function reverseLinked2point($head) {
 /**
  * 斐波那契额数列；
  * f(n) = f(n-1) + f(n-2);
- *指数级别的时间复杂度 O(2^n)
- */
+ *指数级别的时间复杂度 O(2^n)空间时间复杂度是O(n)
+ * 肯定是后序递，因为f(n) 需要依赖于上一级返回的数据； 所以是后序遍历；
+ * 
+ * */
 
 function fib($n) {
     if ($n <= 2) return $n;
     return fib($n - 1) + fib($n - 2);
 }
+
+/**
+ * 会占用额外内存；
+ * 时间复杂度是O(n) 空间时间复杂度是O(n);
+ * */ 
+function fibDp($n) {
+    //动态规划的fib 
+    //dp[$i]的含义；就是第i个元素；
+    //dp 数组的初始化；
+    $dp[0] = 0;
+    $dp[1] = 1;
+    
+    //遍历顺序 顺序遍历；
+    for ($i = 2; $i <= $n; $i++) {
+        // 递推公式；
+        $dp[$i] = $dp[$i - 1] + $dp[$i - 2];
+    }
+    return $dp[$n];
+    //打印dp数组；
+}
+/**
+ *  时间复杂度是O(n) 空间复杂度是O(1)
+ */
+function fibMore($n) {
+    if ($n <= 1) return $n;
+    $a = 0; 
+    $b = 1;
+    for ($i = 2; $i <= $n; $i++) {
+        $c = $a + $b;
+        $tmp = $b;
+        $b = $c;
+        $a = $tmp;
+    }
+    return $c;
+}
+
 $mid = fib(5);
+
 // var_dump($mid);
 
 /**
  * 尾巴递归；
  * n!;  寻找 n 和n -1 之间的关系；
- * 
+ * 时间复杂度也是O(n)和空间复杂度也是O(n);
  *  */
 function jiecheng($n) {
     if ($n == 0) return 1;
@@ -118,7 +156,16 @@ function jiecheng($n) {
     //这也是一个后向递归，并且n 和 n-1是有关系的；
     return $n * jiecheng($n - 1);
 }
-
+/**
+ * 阶乘动态规划，时间复杂度是O(n) 空间时间复杂度O(n);
+ */
+function jiechengDp($n) {
+    $dp[0] = 1;
+    for ($i = 1; $i <= $n; $i++) {
+        $dp[$i] = $dp[$i - 1] * $i;
+    }
+    return $dp[$n];
+}
 /**
  *递归用用来遍历数组； 
  *  */
@@ -143,3 +190,10 @@ function traverseArr1($arr,$i) {
     //注意 当代码执行完成后 会自动return；
 }
 // traverseArr1($arr,0);
+
+
+
+/**
+ * 提到后序 想到的就是递归 （后序递归遍历） +  栈；
+ * 
+ *  */

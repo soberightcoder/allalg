@@ -178,6 +178,7 @@ function isValid($s)
 /**
  * 删除字符串中所有的相邻重复项；
  * 删除 相邻的重复元素，可以和栈顶对比；
+ * leetcode --- 1047；
  *  */
 function removeDuplicates($s)
 {
@@ -185,10 +186,11 @@ function removeDuplicates($s)
     $stack = [];
     $n = strlen($s);
     for ($i = 0; $i < $n; $i++) {
-        //
+        // 或条件的
         if (empty($stack) || $stack[count($stack) - 1] != $s[$i]) {
             array_push($stack, $s[$i]);
         } else {
+            // 这是要满足什么条件？？ 
             array_pop($stack);
         }
     }
@@ -477,7 +479,7 @@ function traverseArr1($arr, $i)
 // traverseArr1($arr,0);
 
 
-//php 栈顶元素的计算可以用end来计算；但是注意 使用完一定要重置
+//php 栈顶元素的计算可以用end来计算；但是注意 使用完一定要重置  直接用count()；来计算把；简单一点；
 
 
 /**
@@ -498,5 +500,5 @@ function traverseArr1($arr, $i)
  *  */ 
 
  /**
-  * forech 就是可以遍历 关联数组  然后另外一个就是对象；
+  * foreach 就是可以遍历 关联数组  然后另外一个就是对象；
   */
