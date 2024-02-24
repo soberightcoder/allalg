@@ -22,19 +22,19 @@ function isAnagram($s, $t)
     $res = [];  //最多26个字母；
     //初始化；
     for ($i = 0; $i < 26; $i++) {
-        $res[chr(97+$i)] = 0;
+        $res[chr(97 + $i)] = 0;
     }
     // 每个字符串出现的频率；
     for ($i = 0; $i < $sl; $i++) {
-            $res[$s[$i]]++;
+        $res[$s[$i]]++;
     }
 
     for ($i = 0; $i < $tl; $i++) {
-            $res[$t[$i]]--;
+        $res[$t[$i]]--;
     }
 
     //比对方式有问题，不应该去做比对 对不对；
-    foreach($res as $k=>$v) {
+    foreach ($res as $k => $v) {
         if ($v != 0) {
             // 
             return false;
@@ -54,7 +54,8 @@ function isAnagram($s, $t)
  * 边界条件考虑一下，一个为NULL 另外一个是一个数组；
  */
 
- function intersection($nums1, $nums2) {
+function intersection($nums1, $nums2)
+{
     $count = [];
     $res = [];
     // 利用数组的key 来做去重；
@@ -63,7 +64,7 @@ function isAnagram($s, $t)
     }
 
     foreach ($nums2 as $num) {
-        if (isset($count[$num])){
+        if (isset($count[$num])) {
             $res[] = $num;
         }
         //这里很精髓呀；
@@ -72,14 +73,15 @@ function isAnagram($s, $t)
         unset($count[$num]);
     }
     return $res;
- }
+}
 
 
 /**
  * 两数之和；twoSum
  * 
- *  */ 
- function twoSum($nums, $target) {
+ *  */
+function twoSum($nums, $target)
+{
     // $nums[$i]
     //两数字之和； $target - $nums[$i]
     //传统的方法 时间复杂度太高了O(n^2) 
@@ -112,8 +114,8 @@ function isAnagram($s, $t)
         }
         $map[$nums[$i]] = $i;
     }
- }
- 
+}
+
 //  var_dump(twoSum([2,7,11,15],9));
 
 /**
@@ -123,7 +125,8 @@ function isAnagram($s, $t)
  * 时间复杂度是O(n^2) //空间复杂度是O(n)
  * 如果用四层for 循环那么会是n^4的时间复杂度；
  *  */
-function fourSumCount($nums1, $nums2, $nums3, $nums4) {
+function fourSumCount($nums1, $nums2, $nums3, $nums4)
+{
     // $nums1[$i] + $nums2[$j] +$nums3[$x]+ $nums[$y] = 0;
     $map1 = [];
     $count = 0;
@@ -143,7 +146,7 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
     for ($x = 0; $x < $n; $x++) {
         for ($y = 0; $y < $n; $y++) {
             if (isset($map1[0 - $nums3[$x] - $nums4[$y]])) {
-                $count += $map1[0-$nums3[$x] - $nums4[$y]];
+                $count += $map1[0 - $nums3[$x] - $nums4[$y]];
             }
         }
     }
@@ -158,7 +161,8 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
  * 所以最好不要用map 来做； 去重会很麻烦； 去重很麻烦，hash 写的算法是一个半成品；
  *  */
 
- function threeSum($nums) {
+function threeSum($nums)
+{
     // $nums[$i] + $nums[$j] + $nums[$x] == 0;并且 i != y != x;
     //hash
     // $n = count($nums);
@@ -176,7 +180,7 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
     //     }
     // }
     // return $res;
-    
+
     // 双指针；时间复杂度(n^2) 空间复杂度是O(1)
     $res = [];
     sort($nums);
@@ -184,33 +188,31 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
     $n = count($nums);
     for ($i = 0; $i < $n; $i++) {
         //i的去重； [-1,-1,2]当i = -1的时候 前面一个元素也是一个1 ，那么就开始计算下一个元素；
-        if($i > 0 && $nums[$i] == $nums[$i -1]) continue;
+        if ($i > 0 && $nums[$i] == $nums[$i - 1]) continue;
         //双指针的初始化；
         $left = $i + 1;
         //end
         $right = $n - 1;
         //遍历
-        while ($right > $left)  {
+        while ($right > $left) {
             if ($nums[$i] + $nums[$left] + $nums[$right]  > 0) {
                 $right--;
-            } elseif( $nums[$i] + $nums[$left] + $nums[$right] < 0) {
+            } elseif ($nums[$i] + $nums[$left] + $nums[$right] < 0) {
                 $left++;
             } else {
-               $res[]  = [$nums[$i],$nums[$left],$nums[$right]];
-                //left right 的去重；  [0,0,0,0];
+                $res[]  = [$nums[$i], $nums[$left], $nums[$right]];
+                //left right 的去重；  [0,0,0,0]; 0 0 0 0-1-1-1-1 1 1 1 1 去重;
                 while ($right > $left && $nums[$left] == $nums[$left + 1]) $left++;
                 while ($right > $left && $nums[$right] == $nums[$right - 1]) $right--;
 
-                 // 找到答案时，双指针同时收缩
-                 $right--;
-                 $left++;
+                // 找到答案时，双指针同时收缩
+                $right--;
+                $left++;
             }
-
-           
         }
     }
     return $res;
- }
+}
 //  var_dump(threeSum([-1,0,1]));
 
 /**
@@ -220,17 +222,18 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
  * 这边可以做很多的剪枝的操作；
  */
 
- function fourSum($nums, $target) {
+function fourSum($nums, $target)
+{
     $res =  [];
     sort($nums);
     $n = count($nums);
     //一重剪枝
-    if ($nums[0] >=0 && $nums[0] > $target) return [];
+    if ($nums[0] >= 0 && $nums[0] > $target) return [];
 
     for ($k = 0; $k < $n; $k++) {
-        if ($k > 0 && $nums[$k] == $nums[$k - 1] ) continue;
+        if ($k > 0 && $nums[$k] == $nums[$k - 1]) continue;
         for ($i = $k + 1; $i < $n; $i++) {
-            if ($nums[$k] + $nums[$i] > $target && $nums[$k] + $nums[$i] >=0) break;
+            if ($nums[$k] + $nums[$i] > $target && $nums[$k] + $nums[$i] >= 0) break;
             // 去重操作；
             // 条件就是$i > $k + 1
             if ($i > $k + 1 && $nums[$i] == $nums[$i - 1]) continue;
@@ -239,12 +242,12 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
             $right = $n - 1;
 
             while ($right > $left) {
-                if($nums[$i] + $nums[$k] + $nums[$left] + $nums[$right] > $target) {
+                if ($nums[$i] + $nums[$k] + $nums[$left] + $nums[$right] > $target) {
                     $right--;
                 } elseif ($nums[$i] + $nums[$k] + $nums[$left] + $nums[$right] < $target) {
                     $left++;
                 } else {
-                    $res[] = [$nums[$k],$nums[$i],$nums[$left],$nums[$right]];
+                    $res[] = [$nums[$k], $nums[$i], $nums[$left], $nums[$right]];
 
                     while ($right > $left && $nums[$left] == $nums[$left + 1]) $left++;
                     while ($right > $left && $nums[$right] == $nums[$right - 1]) $right--;
@@ -255,8 +258,47 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
         }
     }
     return $res;
+}
 
- }
+
+/**
+ * leetcode128最长连续序列的长度是多少？
+ * 索引数组；
+ * //todo 为什么我的运行时间那么长；
+ * 牵扯到查询某个值 在不在某个数组的操作的时候一般都会用到哈希表；
+ *  */ 
+class Solution128 {
+
+    /**
+     * @param Integer[] $nums
+     * @return Integer
+     */
+    /**
+     *  时间复杂度是O(n) 空间复杂度是O(n);
+     */
+    function longestConsecutive($nums) {
+        $res = 0;
+        //最长连续序列；
+        $map = [];
+        for ($i = 0; $i < count($nums); $i++) {
+            $map[$nums[$i]] = 1;
+        }
+        //traverse
+        for ($i = 0; $i < count($nums); $i++) {
+            // m -1 没在里面那么就可以做首部；
+            if (!$map[$nums[$i] - 1]) {
+                $j = $nums[$i] + 1;
+                $len_seq = 1;
+                while ($map[$j]) {
+                    $len_seq++;
+                    $j++;
+                }
+                $res = max($len_seq, $res);
+            }
+        }
+        return $res;
+    }
+}
 /**
  * 
  * extra extends 额外的扩展；
@@ -269,9 +311,9 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
  * map ===> 关联数组； 就是映射数组； 
  */
 
- /**
-  * demo
-  */
+/**
+ * demo
+ */
 // 判断某个key 是否存在一定要用isset ，因为会存在值是0的情况；
 //  $arr = [1];
 // var_dump($arr[3]);die; // NULL
@@ -305,12 +347,12 @@ function fourSumCount($nums1, $nums2, $nums3, $nums4) {
  */
 
 
- /**
-  * 数组的遍历
-  * 长度是一个整型$n , 和变化长度count($arr)的区别！！！
-  * 注意这个区别！！！
-  */
-$arr = [1,2,3,4];
+/**
+ * 数组的遍历
+ * 长度是一个整型$n , 和变化长度count($arr)的区别！！！
+ * 注意这个区别！！！
+ */
+$arr = [1, 2, 3, 4];
 //变成3了；
 // for ($i = 0; $i < count($arr); $i++) {
 //     echo count($arr)."---"; // 一直都是4，并不会改变，unset();
@@ -324,11 +366,24 @@ $arr = [1,2,3,4];
 // var_dump($arr,count($arr));
 // die;
 
-$n = 4;
-for ($i = 0; $i < $n; $i++) {
-    if ($i == 2) { 
-        unset($arr[$i]);
-    } else {
-        echo $arr[$i];
-    }
-}
+// $n = 4;
+// for ($i = 0; $i < $n; $i++) {
+//     if ($i == 2) { 
+//         unset($arr[$i]);
+//     } else {
+//         echo $arr[$i];
+//     }
+// }
+
+
+// if else 可以有化成   if  continue 语句；都是一样的；
+
+// for ($i = 1; $i < $n; $i++) {
+//     if ($i = 1) {
+//         echo "logic 1!业务逻辑1!!";
+//         continue;
+//     }
+//     echo "logic 2!业务逻辑2!!";
+// }
+
+

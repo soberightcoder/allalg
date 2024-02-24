@@ -17,6 +17,8 @@ function reverseString(&$s)
     $len = count($s);
     $l = 0;
     $r = $len - 1;
+
+    //注意这里的遍历条件； 自己结合 奇数和偶数去判断一下；
     while ($r > $l) {
         //swap
         $mid = $s[$l];
@@ -45,6 +47,7 @@ function reverse(&$s) {
 /**
  *541.反转字符串II 
  * 注意这个固定思维，字符串一定要一个一个字符的移动，可以2K个字符的移动；
+ * //todo --  没做出来；
  *  */
 
 function reverseStr($s, $k)
@@ -58,7 +61,7 @@ function reverseStr($s, $k)
         //if 里面的判断 和reverse 的输入条件
         // 剩下的超过$k那么就反转前$k的字符；
         if ($i + $k <= $size) {
-            // 0 - $k
+            // 0 -> $k- 1 才算是$k的长度；
             reverse1($s,$i,$i + $k - 1);
             continue;
         }
@@ -71,6 +74,7 @@ function reverseStr($s, $k)
  *字符串的反转函数；
  * 左闭右开 （） 是什么东西？？？ 这里需要查看一下；
  * 下面我实现的是左闭区间 右闭区间；
+ * 左闭区间 和右闭区间；
  */
 function reverse1(&$s, $i, $j)
 {
@@ -120,8 +124,10 @@ class Solution {
         for ($i = 0; $i < $n; $i += 2*$k) {
 
 
-            // 下面的两种计算方法都是可以的； 
+            // 下面的两种计算方法都是可以的；
+            // 你要保证的是$i + $k不能超出$n; 不然就溢出了；
             if ($i + $k < $n) {
+                //这个范围其实就是左开右闭；
                 $this->reverse2($s,$i,$i+$k);
                 continue;
             }
@@ -149,7 +155,8 @@ class Solution {
             $r--;
         }
     }
-    //左闭 右开；
+
+    //左闭 右开； ？？？/
     function reverse2(&$s,$i,$j) {
         $l = $i;
         $r = $j - 1;
@@ -163,12 +170,49 @@ class Solution {
         }
     }
 }
+/**
+ * 下面是左闭右开区间的结果；
+ *  */
+class Solutio541  {
 
+    /**
+     * @param String $s
+     * @param Integer $k
+     * @return String
+     */
+    function reverseStr($s, $k) {
+        $len = strlen($s);
+        //每次移动2k
+        for ($i = 0; $i < $len; $i+=2*$k) {
+            // 
+            if($i + $k < $len) {
+                $this->reverse($s,$i, $i + $k);
+                continue;
+            }
+            $this->reverse($s, $i, $len);
+        }
+        return $s;
+    }
+    //左闭右闭区间字符串的翻转；
+    function reverse(&$s, $i, $j) {
+        $j = $j - 1;
+        while ($j > $i) {
+            $tmp = $s[$i];
+            $s[$i] = $s[$j];
+            $s[$j] = $tmp;
+            $j--;
+            $i++;
+        }
+    }
+}
 
 /**
  * 反转字符串里面的单词； 
+ * 注意这里是反转的是字符串的顺序；
+ * 先对字符串做整体的反转，然后再对每一个单词来做反转；
  * 151. 反转字符串中的单词
  * --- 双指针；
+ * //todo 也是没有做出来；
  *  */
  $str = '  ab  c  ';
 function reverseWords($s) {
@@ -181,7 +225,7 @@ function reverseWords($s) {
     //然后再对单词做一个反转；-- 对单词的反转；
     //也是类似于双指针；
     $start = 0;
-    //注意这个取值范围；
+    //注意这个取值范围；注意要等于 $n 表示字符串结束也代表最后一个单词的结束，这个时候我们就需要做反转了；
     for ($i = 0; $i <= $n; $i++) {
         // 空格或者串尾表示一个单词的结束；
         if ($i == $n || $s[$i] == ' ') {
@@ -193,18 +237,27 @@ function reverseWords($s) {
     // return $s;
     // var_dump($s); 
 }
-reverseWords($str);die;
+// reverseWords($str);die;
 
+/**
+ *就是和数组里面删除某个值一样的算法；---- 都是使用的覆盖；
+ * //todo  
+ * 移除字符串中的空格；
+ * 原地消除空格； O(1)的时间复杂度来消除空格；原地就需要双指针；
+ * 也是双指针来消除空格；
+ *  */
 function removeExtraSpaces(&$s){
     $slow = 0;   
+    // $i === $fast的快指针；
     for ($i = 0; $i < strlen($s); $i++) {
         if ($s[$i] != ' ') {  //去除所有的空格；
-        
+            //空格单词，空格单词，空格单词，但是第一个单词前面没有单词；这样就能保证，最后一个单词后面没有空格了；
             if ($slow != 0){  // 给单词之间添加空格！！！！保存的是空格；  怎么添加的？slow != 0说明不是第一个单词，需要在单词前添加空格。
+                // 单词之间要加空格，但是第一个单词前面不需要加空格；
                 $s[$slow] = ' '; 
                 $slow++;
             } 
-
+            // 要把一个单词加载上；所以用while 
             while ($i < strlen($s) && $s[$i] != ' ') {  //补上该单词，遇到空格说明单词结束。这里是保存的单词；
                 $s[$slow] = $s[$i];
                 $slow++;
@@ -213,13 +266,46 @@ function removeExtraSpaces(&$s){
         }
     }
     // 移动覆盖处理，丢弃多余的脏数据。
-    $s = substr($s,0,$slow);
+    $s = substr($s,0,$slow); // 这里切分也是左闭右开的形式；
     return ;
 }
 
 // removeExtraSpaces($str);
 // var_dump($str);
 
+
+/**
+ *  --- 滑动窗口的用法； 
+ * leetcode --- 3  无重复最长子串；
+ * 最重要的是最左边界的移动条件，右边界一直在移动有；
+ *  */ 
+
+ class Solution3 {
+
+    /**
+     * @param String $s
+     * @return Integer
+     */
+    function lengthOfLongestSubstring($s) {
+        //这边是一个数组，记录是窗口内数组的位置；
+        $map = [];
+        $ans = 0;
+        for ($j = 0, $i = 0; $i < strlen($s); $i++) {
+            // $i 代表的是左边界，$j 代表的是右边界；
+            // $j = max($j, $map[$s[$i]] + 1);//没有就是本身；新加入的元素没有重复的；
+            if (isset($map[$s[$i]])) {
+                //从左边界出窗口的都不计算在内了；
+                $j = max($j,$map[$s[$i]] + 1);
+            }
+            $ans = max($ans, $i - $j + 1);
+            $map[$s[$i]] = $i;
+        }
+        return $ans;
+    }
+}
+$obj3 = new Solution3();
+echo $obj3->lengthOfLongestSubstring(" ");
+die;
 
 /**
  * KMP 算法 在某个字符串中 查找某个字符串；

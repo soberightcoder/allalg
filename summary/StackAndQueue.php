@@ -186,7 +186,7 @@ function removeDuplicates($s)
     $stack = [];
     $n = strlen($s);
     for ($i = 0; $i < $n; $i++) {
-        // 或条件的
+        // 明白了，不满足第一个就满足第二个；
         if (empty($stack) || $stack[count($stack) - 1] != $s[$i]) {
             array_push($stack, $s[$i]);
         } else {
@@ -207,8 +207,8 @@ function removeDuplicates($s)
 
 /**
  * 逆波兰表达式求值；
- * 表达式计算的
- *
+ * 表达式计算的  也是用栈来实现的；
+ * leetcode--- 150；
  *  */
 function evalRPN($tokens)
 {
@@ -217,8 +217,10 @@ function evalRPN($tokens)
     $map = ['+', '-', '*', '/'];
     for ($i = 0; $i < $n; $i++) {
         if (!in_array($tokens[$i], $map)) {
+            //是数值直接入栈就行；
             array_push($stack, $tokens[$i]);
         } else {
+            // 是符号位。就弹出计算值；然后再次插入；
             //符号位；
             $y = array_pop($stack);
             $x = array_pop($stack);
@@ -240,17 +242,19 @@ function evalRPN($tokens)
             array_push($stack, $z);
         }
     }
+    // 返回数值；
     return $stack[0];
 }
 // var_dump(evalRPN(["2","1","+","3","*"]));die;
 
 /**
+ * //todo -- 比较难的那种；
  * 求滑动窗口的最大值；
  * 239. 滑动窗口最大值
  * 难点是在于 怎么求解滑动窗口内的最大值；
  * 单调队列；
  *  */
-//单调队列的实现 --- 用双向队列来实现的；
+//单调队列的实现 --- 用双向队列来实现的；单调队列，维护队列里面单调递增单调递减；
 class MyQueue1
 {
     //$queue[0] ===   代表的是队列的最大值；
@@ -265,6 +269,7 @@ class MyQueue1
     {
         //push 的时候 做了 很多pop操作；
         // 有可能会删除很多个；
+        //等于的时候也会添加；
         while (!empty($this->queue) && $x > $this->queue[count($this->queue) - 1]) {
             array_pop($this->queue);
         }
@@ -273,6 +278,7 @@ class MyQueue1
 
     function pop($x)
     {
+        //只有是最大值的时候才会删除；
         if (!empty($this->queue) && $x == $this->queue[0]) {
             array_shift($this->queue);
         }
@@ -280,6 +286,7 @@ class MyQueue1
 
     function getMax()
     {
+        // 维护这一个最大值；
         return $this->queue[0];
     }
 }
@@ -415,6 +422,7 @@ function topKFrequentByHeap($nums, $k)
     }
     $heap = new MyMinHeap();
     foreach ($map as $key => $val) {
+        // key为索引  , $val代表出现的频率；以频率来做排序；
         $heap->insert([$key,$val]);
         //超过k就pop();
         if ($heap->count() > $k) {
@@ -429,7 +437,7 @@ function topKFrequentByHeap($nums, $k)
     return $res;
 }
 
-var_dump(topKFrequentByHeap([4,1,-1,2,-1,2,3],2));
+// var_dump(topKFrequentByHeap([4,1,-1,2,-1,2,3],2));
 
 /***
  * extra extends 额外的操作；
@@ -483,7 +491,7 @@ function traverseArr1($arr, $i)
 
 
 /**
- *  优先队列 底层就是大顶堆  或者小顶堆来实现的；
+ *  优先队列 底层就是大顶堆  或者小顶堆来实现的；  优先队列，也可以得到一个队列的最大值；
  *  */
 
 /**
