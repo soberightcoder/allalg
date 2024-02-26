@@ -295,7 +295,7 @@ function removeExtraSpaces(&$s){
             // $j = max($j, $map[$s[$i]] + 1);//没有就是本身；新加入的元素没有重复的；
             if (isset($map[$s[$i]])) {
                 //从左边界出窗口的都不计算在内了；
-                $j = max($j,$map[$s[$i]] + 1);
+                $j = max($j,$map[$s[$i]] + 1);//左边直接跳；
             }
             $ans = max($ans, $i - $j + 1);
             $map[$s[$i]] = $i;

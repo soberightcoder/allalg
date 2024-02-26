@@ -24,7 +24,7 @@
  * for(集合元素集) 这里的for循环代表的是循环次数，也是回溯的几叉树；
  *    处理节点； 处理节点的操作；
  *    递归函数；--- 
- *    回溯操作；撤销处理节点的情况；为啥要撤销？
+ *    回溯操作；撤销处理节点的情况；为啥要撤销？肯定要撤销呀；不然数据就错误了；
  *   
  */
 /**
@@ -161,11 +161,11 @@ class Solution112
             if ($right == true) return true;
             $this->sum -= $root->right->val;
         }
-        //最后一个有一个是真的就行啦；
+        //最后一个有一个是真的就行啦；// 遍历完了没有就字节返回false；
         //没有提前返回true 就是false；
         return false;
     }
-
+    // 做减法 确实比较简单；
     function traverse1($root, $count)
     {
         //这边使用的是局部变量，然后做的是减法运算；$count == 0 ；
@@ -199,11 +199,14 @@ class Solution112
 /**
  * 
  *  下面全是组合问题：
- * 组合 因为 1，2 和2，1 是一个组合，所以我们需要去重；
+ * 组合 因为 1，2 和2，1 是一个组合，所以我们需要去重；是一个深度的剪枝；
  * 去重的实现就是用startIndex来实现的；
+ * 每一层 都是一个循环；
  *  */
 /**
  *  77. 组合
+ *  剪枝操作  --- [1,2,3,4,5] 比如有五个数据 $n = 5; $k = 3; 其实你的$n值只需要取到3就可以了；
+ * //$i< = $n - ($k - $this->tmp) + 1; => 5-(3 - 0) + 1 = 3; 3就代表的是结束；直接带入值来做测试就好了；
  */
 
 class Solution77
@@ -352,7 +355,7 @@ class Solution17
     //digits 遍历到第几个元素了；
     public function backTracking($digits, $index)
     {
-        //两个数字就是两层；
+        //两个数字就是两层；---- 超出索引范围了，所以肯定要开始收集数据了；
         if ($index == strlen($digits)) {
             //把数组转换成字符串，中间没有分隔符；
             $this->res[] = implode($this->tmp);
@@ -502,16 +505,18 @@ class Solution78
     //startIndex代表的是待遍历元素的索引；
     function backTracking($nums, $startIndex)
     {
-        //每一个节点 刚进入节点的时候；
+        //每一个节点 刚进入节点的时候；[] 是什么时候输入进去的？ 前序遍历呀 我知道了；？ [] 不会输入多个吗？
+        //是只会进入一次；捋一下业务逻辑；
         $this->res[] = $this->tmp;
-        //
+        //假如是[1,2,3] 在$startIndex = 0的时候收获[] ,在1的时候受1,在2的时候收获[1,2],在三的时候去收获[1,2,3]，3正好等于数组的长度；也正好是结束条件；
         if ($startIndex == count($nums)) {
-            //end
+            //end  // 这个结束条件是怎么判断的；？？？
             return;
         }
         //traverse；
         //好好去理解一下 呀 卧槽；这里还是有点迷糊；
         //$startindex 仅仅是对下一层起作用，对下一层起到了去重作用；  只会往后面拿走；
+        //而且要全部遍历完；
         for ($i = $startIndex; $i < count($nums); $i++) {
             //tmp的问题；好好看一下把；
             $this->tmp[] = $nums[$i];
@@ -552,7 +557,7 @@ class Solution78
         $this->res[] = $this->tmp;
         //因为 startIndex进入到下一层了，count($nums);代表的是长度；
         if ($startIndex == count($nums)) {
-            //end
+            //end 
             return;
         }
         //traverse；
@@ -589,10 +594,13 @@ class Solution78
     public $tmp = [];
     public $res = [];
     public $used = [];
+
     function permute($nums) {
         for ($i = 0; $i < count($nums); $i++) {
             $this->used[$i] = 0;
         }
+        //数据的初始化；
+        // $this->used = array_fill(0, count($nums),0);// 从0开始填充，填充数组的长度是count($nums); 用什么数据来做填充，就是用0来做填充；
         $this->backTracking($nums);
         return $this->res;
     }
@@ -600,6 +608,7 @@ class Solution78
     function backTracking($nums) {
         //在遍历结束，节点的地方来接收数据
         $n = count($nums);
+        //end condition;
         if (count($this->tmp) == $n) {
             $this->res[] = $this->tmp;
             return ;

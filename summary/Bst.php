@@ -52,6 +52,7 @@ $c->left = $f;
 /**
  * 700. 二叉搜索树中的搜索
  * 你可以看到 其实递归式线性的；他有确定的路线；所以时间复杂度式log2N;
+ * 二叉搜索树；-- 查询某个数据是否在树内；
  */
 
 class Solution700
@@ -64,6 +65,7 @@ class Solution700
      */
     function searchBST($root, $val)
     {
+        //找到了直接返回 这是bst的结束条件；
         if ($root == NULL || $root->val == $val) return $root;
         //下面的两个只能运行 一个；
         if ($root->val > $val) $res = $this->searchBST($root->left, $val);
@@ -289,10 +291,11 @@ class Solution235
      * @param TreeNode $q
      * @return TreeNode
      */
+    // 注意 在树中$root 仅仅代表的是任意一个节点；
     function lowestCommonAncestor($root, $p, $q)
     {
         //end condition 结束条件才是找到结果
-        if ($root == NULL) return;
+        if ($root == NULL) return; //代表的是没找到；
 
         // 利用bst的特性来做一个剪枝操作；并不是遍历全部的元素；
         if ($root->val > $p->val && $root->val > $q->val) {
@@ -315,6 +318,7 @@ class Solution235
 /**
  * 
  * Bst 插入和删除节点问题；
+ * bst的插入问题；
  */
 /**
  * 701. 二叉搜索树中的插入操作
@@ -409,6 +413,8 @@ class Solution450
         //没找到删除的节点；
         if ($root == NULL) return NULL;
         // 找到了删除节点；
+        // 这都是结束条件；
+        // 找到数据直接返回；
         if ($root->val == $key) {
 
             // 删除的是叶子节点 不需要改变二叉树的结构；左边空 右边空；
@@ -425,18 +431,23 @@ class Solution450
             }
             //
             // 左不空，右不空，这个节点的删除；--- 这个是最难的；需要大幅度的调整二叉树；
+            // bst的最小值在树的最左下角，就是在bst的最左节点；右子树的所有节点都比父节点大；
             if ($root->left != NULL && $root->right != NULL) {
                 // 往右子树去找比较小的值；
                 $cur = $root->right;
+                //注意是$cur->left != NULL 找到的是叶子节点；
                 while ($cur->left != NULL) {
                     $cur = $cur->left;
                 }
+                //$cur 节点就是我们需要找到的节点；
+                //把root的左子树赋值给这个点的left 就可以了；返回给上一级$root->left 就可以了；
                 $cur->left = $root->left;
                 return $root->right;
             }
         }
         //遍历；
         if ($root->val > $key) {
+            // 上一个节点的接收；接收数据；这是后序遍历$root->left;
             $root->left = $this->deleteNode($root->left, $key);
         } else {
             $root->right = $this->deleteNode($root->right, $key);
@@ -451,6 +462,9 @@ class Solution450
  * 修建二叉树，并不是剪枝操作；
  * 注意 $root->val < $low 因为他的右子树，是有可能大于$low 所以要对右子树来进行修剪；
  * 同理 ， $root->val  > $high 我们只需要对他的左子树进行修剪就好了；
+ * 用当前层对上一层的返回值，来进行删除；
+ * 前序递归；
+ * 调用函数之后都是修剪完bst的树；修建完的结果；
  *  */
 
 class Solution669
@@ -469,10 +483,11 @@ class Solution669
 
         //前序遍历；
         //$root->val 和  $low  和 high的关系；
+        //$root->val < $low 那么这个节点的右孩子有可能是满足情况的；
         if ($root->val < $low) {
             //因为一直 往右边走，所以值一直变大，所以肯定先删除的是，
             //修剪他的右子树，因为他的右子树，有可能会有比他大的值；
-            $right = $this->trimBST($root->right, $low, $high);
+            $right = $this->trimBST($root->right, $low, $high);  // 修建完之后的树；
             //修剪后的结果；
             return $right;
         }
@@ -659,6 +674,31 @@ function addAndDelete($root, $val)
  * 在bst中查找比该节点，大一丢丢的数字，肯定在这个左子树的的左下角；
  *  */
 
+
+ /**
+  * bst树的递归遍历 找到了直接返回；直接就是一层层的返回呀；不再往下遍历了； 注意return的用法；
+  */ 
+
+
+  class Solution700Bak
+  {
+  
+      /**
+       * @param TreeNode $root
+       * @param Integer $val
+       * @return TreeNode
+       */
+      function searchBST($root, $val)
+      {
+          //找到了直接返回 这是bst的结束条件；
+          if ($root == NULL || $root->val == $val) return $root;
+          //下面的两个只能运行 一个；
+          if ($root->val > $val) $res = $this->searchBST($root->left, $val);
+          if ($root->val < $val) $res = $this->searchBST($root->right, $val);
+          // 其实函数运行结束 没有返回 就是返回return NULL； 这是函数的默认返回；可以不加；最好加上 好理解；
+          return $res;
+      }
+  }
 
 /**
  *注意在 递归中二叉树中 ，这代表的是二叉树子树的结果值； 
